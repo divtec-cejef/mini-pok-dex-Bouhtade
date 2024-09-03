@@ -55,7 +55,13 @@ function displayPokemons() {
         pokemonContainer.innerHTML += `<p>Dracaufeu a tout brûlé, aucun pokémon ne correspond à ta recherche !</p>`
     } else {
         for (let pokemon of pokemons) {
-            pokemonContainer.innerHTML += `<p>${pokemon.name}</p>`;
+            let typesArray = pokemon.type.split(',');
+            let typesString = ``;
+            for (let index = 0; index < typesArray.length; index++) {
+                typesString += `<small>${typesArray[index]}</small> `;
+            }
+
+            pokemonContainer.innerHTML += `<p>${pokemon.name} ` + typesString + `</p>`;
         }
     }
 }
