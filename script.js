@@ -50,10 +50,13 @@ const pokemons = [
     { name: 'Mewtwo', type: 'Psy', level: 70, img: 'mewtwo.png' }
 ];
 
+// Fonction qui affiche la liste des pokémons.
 function displayPokemons() {
+    // S'il n'y a pas de pokémons, afficher un message d'erreur.
     if (pokemons.length === 0) {
         pokemonContainer.innerHTML += `<p>Dracaufeu a tout brûlé, aucun pokémon ne correspond à ta recherche !</p>`
     } else {
+        // Pour chaque pokémon de la liste, on ajoute son nom et son/ses type(s).
         for (let pokemon of pokemons) {
             let typesArray = pokemon.type.split(',');
             let typesString = ``;
@@ -65,4 +68,6 @@ function displayPokemons() {
         }
     }
 }
+
+// Appel de la fonction.
 displayPokemons();
