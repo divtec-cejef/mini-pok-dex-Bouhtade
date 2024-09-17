@@ -9,7 +9,8 @@
 // Couleur par défaut pour les types de Pokémon non définis
 const DEFAULT_COLOR = '#ccc';
 const pokemonContainer = document.querySelector('.pokemon-container');
-let machin = 'salut'
+const barreRecherche = document.getElementById('search-bar');
+const selectionType = document.getElementById('type-filter');
 
 // Couleurs pour chaque type de Pokémon
 const typeColors = {
@@ -30,7 +31,7 @@ const typeColors = {
 };
 
 // Tableau d'objets représentant les Pokémon
-const pokemons = [
+const pokemonsTab = [
     { name: 'Pikachu', type: 'Électrique', level: 35, img: 'pikachu.png' },
     { name: 'Bulbizarre', type: 'Plante,Poison', level: 15, img: 'bulbizarre.png' },
     { name: 'Salamèche', type: 'Feu', level: 20, img: 'salameche.png' },
@@ -50,24 +51,54 @@ const pokemons = [
     { name: 'Mewtwo', type: 'Psy', level: 70, img: 'mewtwo.png' }
 ];
 
-// Fonction qui affiche la liste des pokémons.
-function displayPokemons() {
-    // S'il n'y a pas de pokémons, afficher un message d'erreur.
-    if (pokemons.length === 0) {
-        pokemonContainer.innerHTML += `<p>Dracaufeu a tout brûlé, aucun pokémon ne correspond à ta recherche !</p>`
-    } else {
-        // Pour chaque pokémon de la liste, on ajoute son nom et son/ses type(s).
-        for (let pokemon of pokemons) {
-            let typesArray = pokemon.type.split(',');
-            let typesString = ``;
-            for (let index = 0; index < typesArray.length; index++) {
-                typesString += `<small>${typesArray[index]}</small> `;
-            }
-
-            pokemonContainer.innerHTML += `<p>${pokemon.name} ` + typesString + `</p>`;
+function generatePokemonCardHTML(pokemon) {
+    let resultat = ``;
+        let typesArray = pokemon.type.split(',');
+        resultat += `<div class="pokemon-card">`
+        if (typesArray.length > 1) {
+            resultat += `<div style="background: linear-gradient(to right, ${typeColors[typesArray[0]]} 50%, ${typeColors[typesArray[1]]} 50%);">`
+        } else {
+            resultat += `<div style="background: ${typeColors[typesArray[0]]}">`
         }
-    }
+         resultat += `<img src="images/${pokemon.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.png" alt="${pokemon.name}">
+        <h2>${pokemon.name}</h2>
+        <div>Type: ${typesArray.join(', ')}</div>
+        <div>Niveau: ${pokemon.level}</div>
+</div>"`;
+    return resultat;
 }
 
+function filterAndSortPokemons() {
+    const recherche = barreRecherche.value;
+    let type = selectionType.value;
+    let resultat = pokemonsTab.filter(pokemon =>
+        pokemon.name.toLowerCase().includes(recherche.toLowerCase())
+        && pokemon.type.includes(type));
+
+    displayPokemons(resultat);
+}
+
+// Fonction qui affiche la liste des pokémons.
+function displayPokemons(tabPokemons) {
+    pokemonContainer.innerHTML = '';
+
+    // S'il n'y a pas de pokémons, afficher un message d'erreur.
+    if (tabPokemons.length === 0) {
+        pokemonContainer.innerHTML += `<p>Dracaufeu a tout brûlé, aucun pokémon ne correspond à ta recherche !</p>`
+    } else {
+            // Pour chaque pokémon de la liste, on ajoute son nom et son/ses type(s).
+            for (let pokemon of tabPokemons) {
+//            let typesArray = pokemon.type.split(',');
+//            let typesString = ``;
+//            for (let index = 0; index < typesArray.length; index++) {
+//                typesString += `<small>${typesArray[index]}</small> `;
+//            }
+                pokemonContainer.innerHTML += generatePokemonCardHTML(pokemon);
+            }
+    }
+}
 // Appel de la fonction.
-displayPokemons();
+filterAndSortPokemons()
+
+barreRecherche.addEventListener('input', filterAndSortPokemons);
+selectionType.addEventListener('change', filterAndSortPokemons);
