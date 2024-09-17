@@ -6,12 +6,6 @@
 
 'use strict';
 
-// Couleur par défaut pour les types de Pokémon non définis
-const DEFAULT_COLOR = '#ccc';
-const pokemonContainer = document.querySelector('.pokemon-container');
-const barreRecherche = document.getElementById('search-bar');
-const selectionType = document.getElementById('type-filter');
-
 // Couleurs pour chaque type de Pokémon
 const typeColors = {
     'Électrique': '#FFD700',
@@ -51,6 +45,13 @@ const pokemonsTab = [
     { name: 'Mewtwo', type: 'Psy', level: 70, img: 'mewtwo.png' }
 ];
 
+// Couleur par défaut pour les types de Pokémon non définis
+const DEFAULT_COLOR = '#ccc';
+const pokemonContainer = document.querySelector('.pokemon-container');
+const barreRecherche = document.getElementById('search-bar');
+const selectionType = document.getElementById('type-filter');
+const ordreTri = document.getElementById('sort-order');
+
 function generatePokemonCardHTML(pokemon) {
     let resultat = ``;
         let typesArray = pokemon.type.split(',');
@@ -66,16 +67,6 @@ function generatePokemonCardHTML(pokemon) {
         <div>Niveau: ${pokemon.level}</div>
 </div>"`;
     return resultat;
-}
-
-function filterAndSortPokemons() {
-    const recherche = barreRecherche.value;
-    let type = selectionType.value;
-    let resultat = pokemonsTab.filter(pokemon =>
-        pokemon.name.toLowerCase().includes(recherche.toLowerCase())
-        && pokemon.type.includes(type));
-
-    displayPokemons(resultat);
 }
 
 // Fonction qui affiche la liste des pokémons.
@@ -97,8 +88,35 @@ function displayPokemons(tabPokemons) {
             }
     }
 }
+
+function filterAndSortPokemons() {
+    const searchQuery = barreRecherche.value.toLowerCase();
+    const selectedType = selectionType.value;
+    const selectedSortOrder = ordreTri.value;
+
+    let filteredPokemons = pokemonsTab.filter(pokemon => {
+        const matchesName = pokemon.name.toLowerCase().includes(searchQuery);
+        const matchesType = selectedType === "" || pokemon.type.includes(selectedType);
+        return matchesName && matchesType;
+    });
+
+    // Trier les Pokémon en fonction du critère sélectionné
+    filteredPokemons.sort((a, b) => {
+        if (selectedSortOrder === 'name-asc') {
+            return a.name.localeCompare(b.name);  // Tri par nom A-Z
+        } else if (selectedSortOrder === 'name-desc') {
+            return b.name.localeCompare(a.name);  // Tri par nom Z-A
+        } else if (selectedSortOrder === 'level-asc') {
+            return a.level - b.level;  // Tri par niveau croissant
+        } else if (selectedSortOrder === 'level-desc') {
+            return b.level - a.level;  // Tri par niveau décroissant
+        }
+    });
+    displayPokemons(filteredPokemons);
+}
 // Appel de la fonction.
 filterAndSortPokemons()
 
 barreRecherche.addEventListener('input', filterAndSortPokemons);
 selectionType.addEventListener('change', filterAndSortPokemons);
+ordreTri.addEventListener('change', filterAndSortPokemons);
